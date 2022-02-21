@@ -8,27 +8,30 @@ import org.scalatest.flatspec.AnyFlatSpec
 import scala.None
 
 class SimpleParserSpec extends AnyFlatSpec {
-    // sucess test
+    // success test
     "A SimpleParser" should "parse valid json values" in {
-        jsonNull.runParser("nullable123").contains(("able123", JsonNull()))
-        jsonValue.runParser("nullable123") should contain(("able123", JsonNull()))
+        jsonNull.run("nullable123").contains(("able123", JsonNull()))
+        jsonValue.run("nullable123") should contain(("able123", JsonNull()))
 
-        jsonBool.runParser("true123") should contain(("123", JsonBool(true)))
-        jsonBool.runParser("false123") should contain(("123", JsonBool(false)))
-        jsonValue.runParser("true123") should contain(("123", JsonBool(true)))
+        jsonBool.run("true123") should contain(("123", JsonBool(true)))
+        jsonBool.run("false123") should contain(("123", JsonBool(false)))
+        jsonValue.run("true123") should contain(("123", JsonBool(true)))
 
-        jsonNumber.runParser("12345a") should contain(("a", JsonNumber(12345)))
-        jsonNumber.runParser("0a") should contain(("a", JsonNumber(0)))
-        jsonValue.runParser("123asdf") should contain(("asdf", JsonNumber(123)))
+        jsonNumber.run("12345a") should contain(("a", JsonNumber(12345)))
+        jsonNumber.run("0a") should contain(("a", JsonNumber(0)))
+        jsonNumber.run("0.013") should contain(("", JsonNumber(0.013)))
+        jsonNumber.run("1e10") should contain(("", JsonNumber(1e10)))
+        jsonValue.run("-.013") should contain(("", JsonNumber(-.013)))
+        jsonValue.run("123asdf") should contain(("asdf", JsonNumber(123)))
 
-        jsonArray.runParser("[]") should contain(("", JsonArray(List())))
-        jsonArray.runParser("[902]") should contain(("", JsonArray(List(JsonNumber(902)))))
-        jsonArray.runParser("[true,902,null]") should contain(("", JsonArray(List(JsonBool(true), JsonNumber(902), JsonNull()))))
-        jsonValue.runParser("[null, false, 123, \"str\"]") should contain(("", JsonArray(List(JsonNull(), JsonBool(false), JsonNumber(123), JsonString("str")))))
+        jsonArray.run("[]") should contain(("", JsonArray(List())))
+        jsonArray.run("[-.0e4]") should contain(("", JsonArray(List(JsonNumber(-.0e4)))))
+        jsonArray.run("[true,902,null]") should contain(("", JsonArray(List(JsonBool(true), JsonNumber(902), JsonNull()))))
+        jsonValue.run("[null, false, -12.3, \"str\"]") should contain(("", JsonArray(List(JsonNull(), JsonBool(false), JsonNumber(-12.3), JsonString("str")))))
     }
 
     "A SimpleParser.jsonObject" should "parse a valid json object" in {
-        val json = jsonObject.runParser("""{
+        val json = jsonObject.run("""{
               "name" : "John Doe",
               "country" : "USA",
               "age" : 25,
@@ -52,7 +55,7 @@ class SimpleParserSpec extends AnyFlatSpec {
     }
 
     "A SimpleParser.jsonObject" should "parse a valid nested json object" in {
-        val json = jsonObject.runParser("""{
+        val json = jsonObject.run("""{
               "company" : "Alphabet",
               "age" : 23,
               "founders": ["Larry", "Sergey"],
@@ -105,8 +108,8 @@ class SimpleParserSpec extends AnyFlatSpec {
 
     // fail test
     "A SimpleParser.jsonObject" should "not parse a invalid json values" in {
-        jsonObject.runParser("""{ city: Paris}""") shouldBe None
-        jsonObject.runParser("""{"company"; "Googe"}""") shouldBe None
-        jsonObject.runParser("""{ "city": "Paris", "data": []]}""") shouldBe None
+        jsonObject.run("""{ city: Paris}""") shouldBe None
+        jsonObject.run("""{"company"; "Googe"}""") shouldBe None
+        jsonObject.run("""{ "city": "Paris", "data": []]}""") shouldBe None
     }
 }
