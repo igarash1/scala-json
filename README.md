@@ -8,7 +8,7 @@ sbt test
 ```
 See the test for examples.
 
-## Further improvement ideas
+# Further improvement ideas
 - Support for float numbers
 - Proper error handling/reporting
 - Use Map for JsonObject
