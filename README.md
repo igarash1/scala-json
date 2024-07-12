@@ -1,5 +1,5 @@
 # Simple Monadic JSON Parser with Cats in Scala
-Experimental JSON parser in Scala.
+Experimental JSON parser in Scala wtih [Cats](https://typelevel.org/cats-effect/).
 
 # Usage
 ```
